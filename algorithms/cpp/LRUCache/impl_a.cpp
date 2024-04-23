@@ -22,11 +22,10 @@ using namespace std;
 class LRUCache
 {
     // the design for O(1) complexity
-    // * need a data struct -- S -- to keep track of used-ness
-    // * when a key is put, push to the S --> map but needs order --> already have a map, get a queue?
+    // * need an internal data struct -- S -- to keep track of used-ness
+    // * when a key is get, push to the S --> map but needs order --> already have a map, get a queue? --> NO. Needs a doubly-linked list to allow O(1)-time moving of key
     // * when a key is put, push to the S and if the S is full, pop the S before pushing --> map but needs order --> needs a queue --> NO, needs a doubly linked list -- doubly because it actually provides O(1) insertion and deletion
-    // * S should also gives O(1) time for checking contained-ness --> map or set
-    // * what is S? it is the internal implementation of LRUCache!
+    // * S should also gives O(1) time for checking contained-ness --> unordered_map
 
 private:
     struct Node
