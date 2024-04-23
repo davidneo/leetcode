@@ -38,23 +38,21 @@ class MinStack
     // Q: is the iterator of an element in the stack not going to change when new elements are pushed into the stack?
 private:
     stack<pair<int, int>> S;
-    optional<int> min_val;
 
 public:
     MinStack()
     {
-        min_val = nullopt;
     }
 
     void push(int val)
     {
-
-        if (!min_val.has_value() || min_val.value() > val)
+        auto min_val = val;
+        if (!S.empty() && getMin() < val)
         {
-            min_val = val;
+            min_val = getMin();
         }
 
-        S.push(make_pair(val, min_val.value()));
+        S.push(make_pair(val, min_val));
     }
 
     void pop()
@@ -78,7 +76,6 @@ public:
         {
             S.pop();
         }
-        min_val.reset();
     }
 };
 
