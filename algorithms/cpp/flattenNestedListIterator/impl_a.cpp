@@ -23,6 +23,7 @@
 #include <stack>
 #include <variant>
 #include <vector>
+#include <cassert>
 using namespace std;
 
 // This is the interface that allows for creating nested lists.
@@ -80,6 +81,7 @@ class NestedIterator
     // --> hasNext():
     // ----> if the stack is empty, then the iterator is at the end
     // NOTE: the list can be empty!!!
+    // --> so, it is better to move the stack handling logic to hasNext() and keep next() simple
 private:
     using NestedListRef = const vector<NestedInteger> &;
     struct StackElement
@@ -97,37 +99,40 @@ public:
 
     int next()
     {
-        int res = -1;
+        assert(hasNext());
         auto &top_idx = S.top().index;
         auto const &top_nestedList = S.top().nestedList;
-        if (top_nestedList.size() > 0)
-        {
-            if (top_nestedList.at(top_idx).isInteger())
-            {
-                res = top_nestedList.at(top_idx++).getInteger();
-            }
-            else
-            {
-                S.push(StackElement{0, top_nestedList.at(top_idx++).getList()});
-                res = next();
-            }
-        }
+        assert(top_idx < top_nestedList.size());
 
-        while (S.size() > 0 && S.top().index >= S.top().nestedList.size())
-        {
-            S.pop();
-        }
-
-        return res;
+        return top_nestedList.at(top_idx++).getInteger();
     }
 
     bool hasNext()
     {
-        while (S.size() > 0 && S.top().index >= S.top().nestedList.size())
+        if (S.empty())
         {
-            S.pop();
+            return false;
         }
-        return !S.empty();
+
+        auto &top_idx = S.top().index;
+        auto const &top_nestedList = S.top().nestedList;
+        if (top_idx < top_nestedList.size())
+        {
+            if (top_nestedList.at(top_idx).isInteger())
+            {
+                return true;
+            }
+            else
+            {
+                S.push(StackElement{0, top_nestedList.at(top_idx).getList()});
+                ++top_idx;
+                return hasNext();
+            }
+        }
+
+        S.pop();
+
+        return hasNext();
     }
 };
 
